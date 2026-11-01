@@ -1,102 +1,40 @@
 
 import Link from "next/link";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   return (
-    <main style={{ minHeight: "100vh", background: "#f8fafc" }}>
-      <nav
-        style={{
-          background: "white",
-          padding: "20px 8%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "20px",
-          boxShadow: "0 2px 10px #00000010",
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            fontSize: "26px",
-            fontWeight: "bold",
-            color: "#4f46e5",
-          }}
-        >
-          📚 BookNook
-        </Link>
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
 
-        <div style={{ display: "flex", gap: "24px" }}>
-          <Link href="/" style={{ color: "#334155" }}>
-            Home
+      <main>
+        <section className="mx-auto max-w-7xl px-6 py-28 text-center">
+          <p className="mb-4 font-semibold uppercase tracking-widest text-indigo-600">
+            Your Digital Library
+          </p>
+
+          <h1 className="text-4xl font-extrabold leading-tight text-slate-900 md:text-6xl">
+            Discover Your Next
+            <span className="text-indigo-600"> Great Read</span>
+          </h1>
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            Explore a world of books, discover inspiring stories,
+            and manage your reading journey with BookNook.
+          </p>
+
+          <Link
+            href="/books"
+            className="mt-9 inline-block rounded-xl bg-indigo-600 px-8 py-4 font-semibold text-white hover:bg-indigo-700"
+          >
+            Explore All Books
           </Link>
-          <Link href="/books" style={{ color: "#334155" }}>
-            All Books
-          </Link>
-          <Link href="/login" style={{ color: "#334155" }}>
-            Login
-          </Link>
-        </div>
-      </nav>
+        </section>
+      </main>
 
-      <section
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          padding: "120px 24px",
-          textAlign: "center",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "clamp(36px, 6vw, 60px)",
-            fontWeight: "bold",
-            color: "#0f172a",
-            lineHeight: 1.2,
-          }}
-        >
-          Welcome to BookNook
-        </h1>
-
-        <p
-          style={{
-            fontSize: "18px",
-            color: "#64748b",
-            maxWidth: "600px",
-            margin: "24px auto 36px",
-            lineHeight: 1.8,
-          }}
-        >
-          Discover amazing books, explore new stories,
-          and manage your personal reading journey.
-        </p>
-
-        <Link
-          href="/books"
-          style={{
-            display: "inline-block",
-            background: "#4f46e5",
-            color: "white",
-            padding: "15px 32px",
-            borderRadius: "10px",
-            fontWeight: "bold",
-          }}
-        >
-          Explore Books
-        </Link>
-      </section>
-
-      <footer
-        style={{
-          textAlign: "center",
-          padding: "30px",
-          color: "#64748b",
-          background: "white",
-        }}
-      >
+      <footer className="border-t border-slate-200 bg-white py-8 text-center text-sm text-slate-500">
         © 2026 BookNook. All rights reserved.
       </footer>
-    </main>
+    </div>
   );
 }
