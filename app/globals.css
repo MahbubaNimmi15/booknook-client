@@ -19,3 +19,20 @@ body {
 a {
   text-decoration: none;
 }
+
+/* BookNook Hero Slider */
+
+.booknook-slider .swiper-button-next,
+.booknook-slider .swiper-button-prev {
+  color: white;
+}
+
+.booknook-slider .swiper-pagination-bullet {
+  background: white;
+  opacity: 0.5;
+}
+
+.booknook-slider .swiper-pagination-bullet-active {
+  background: white;
+  opacity: 1;
+}

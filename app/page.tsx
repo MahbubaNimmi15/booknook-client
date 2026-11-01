@@ -1,6 +1,7 @@
 
 import Link from "next/link";
 import Navbar from "../components/Navbar";
+import HeroSlider from "../components/HeroSlider";
 
 export default function Home() {
   return (
@@ -8,31 +9,32 @@ export default function Home() {
       <Navbar />
 
       <main>
-        <section className="mx-auto max-w-7xl px-6 py-28 text-center">
-          <p className="mb-4 font-semibold uppercase tracking-widest text-indigo-600">
-            Your Digital Library
+        <HeroSlider />
+
+        <section className="mx-auto max-w-7xl px-6 py-20 text-center">
+          <p className="font-semibold uppercase tracking-widest text-indigo-600">
+            Discover More
           </p>
 
-          <h1 className="text-4xl font-extrabold leading-tight text-slate-900 md:text-6xl">
-            Discover Your Next
-            <span className="text-indigo-600"> Great Read</span>
-          </h1>
+          <h2 className="mt-4 text-3xl font-extrabold text-slate-900 md:text-4xl">
+            Explore the World of Books
+          </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            Explore a world of books, discover inspiring stories,
-            and manage your reading journey with BookNook.
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+            BookNook makes it easy to discover interesting books,
+            borrow your favorites, and enjoy your reading journey.
           </p>
 
           <Link
             href="/books"
-            className="mt-9 inline-block rounded-xl bg-indigo-600 px-8 py-4 font-semibold text-white hover:bg-indigo-700"
+            className="mt-8 inline-block rounded-xl bg-indigo-600 px-8 py-4 font-semibold text-white hover:bg-indigo-700"
           >
-            Explore All Books
+            View All Books
           </Link>
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-sm text-slate-500">
+      <footer className="border-t border-slate-200 bg-white px-6 py-8 text-center text-sm text-slate-500">
         © 2026 BookNook. All rights reserved.
       </footer>
     </div>
