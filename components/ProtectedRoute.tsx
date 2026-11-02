@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { authClient } from "../lib/auth-client";
 
-export default function ProtectedRoute({
+function ProtectedRouteContent({
   children,
 }: {
   children: ReactNode;
@@ -14,13 +14,11 @@ export default function ProtectedRoute({
   const pathname = usePathname();
 
   const { data: session, isPending } = authClient.useSession();
-
   const user = session?.user;
 
   useEffect(() => {
     if (!isPending && !user) {
       const callbackURL = encodeURIComponent(pathname);
-
       router.replace(`/login?callbackURL=${callbackURL}`);
     }
   }, [isPending, user, pathname, router]);
@@ -40,4 +38,24 @@ export default function ProtectedRoute({
   }
 
   return <>{children}</>;
+}
+
+export default function ProtectedRoute({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-lg font-semibold text-indigo-600">
+            Checking authentication...
+          </p>
+        </div>
+      }
+    >
+      <ProtectedRouteContent>{children}</ProtectedRouteContent>
+    </Suspense>
+  );
 }

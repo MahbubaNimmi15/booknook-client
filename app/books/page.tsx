@@ -1,101 +1,135 @@
 
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
-import BookCard, { type Book } from "../../components/BookCard";
 
-export const metadata = {
-  title: "BookNook | All Books",
-  description: "Browse the BookNook library collection.",
+type Book = {
+  _id: string;
+  title: string;
+  author: string;
+  category: string;
+  image: string;
+  description: string;
+  quantity: number;
+  rating: number;
 };
 
-// Temporary sample books.
-// These will be replaced by MongoDB data.
-const books: Book[] = [
-  {
-    id: "1",
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    category: "Classic",
-    image: "",
-    availableCopies: 5,
-  },
-  {
-    id: "2",
-    title: "Atomic Habits",
-    author: "James Clear",
-    category: "Self-Help",
-    image: "",
-    availableCopies: 8,
-  },
-  {
-    id: "3",
-    title: "The Alchemist",
-    author: "Paulo Coelho",
-    category: "Fiction",
-    image: "",
-    availableCopies: 4,
-  },
-  {
-    id: "4",
-    title: "1984",
-    author: "George Orwell",
-    category: "Dystopian",
-    image: "",
-    availableCopies: 6,
-  },
-  {
-    id: "5",
-    title: "Deep Work",
-    author: "Cal Newport",
-    category: "Productivity",
-    image: "",
-    availableCopies: 3,
-  },
-  {
-    id: "6",
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    category: "Finance",
-    image: "",
-    availableCopies: 7,
-  },
-];
-
 export default function AllBooksPage() {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchBooks() {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/books"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load books");
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error("Failed to load books");
+        }
+
+        setBooks(data.books);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchBooks();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6 py-16">
-        <div className="mb-12 text-center">
-          <p className="font-semibold uppercase tracking-widest text-indigo-600">
-            Our Library
-          </p>
+      <main className="min-h-screen bg-gray-50 px-4 py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 text-center">
+            <h1 className="text-4xl font-bold text-gray-900">
+              All Books
+            </h1>
+            <p className="mt-3 text-gray-600">
+              Explore books from our library collection.
+            </p>
+          </div>
 
-          <h1 className="mt-4 text-4xl font-extrabold text-slate-900 md:text-5xl">
-            Explore All Books
-          </h1>
+          {loading && (
+            <p className="text-center text-gray-600">
+              Loading books...
+            </p>
+          )}
 
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600">
-            Browse our collection and discover your next favorite read.
-          </p>
-        </div>
+          {error && (
+            <p className="text-center text-red-600">
+              {error}
+            </p>
+          )}
 
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-          {books.map((book) => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </div>
+          {!loading && !error && books.length === 0 && (
+            <p className="text-center text-gray-600">
+              No books available yet.
+            </p>
+          )}
 
-        <div className="mt-14 text-center">
-          <Link
-            href="/"
-            className="inline-block rounded-xl border border-indigo-600 px-8 py-3 font-semibold text-indigo-600 hover:bg-indigo-50"
-          >
-            Back to Home
-          </Link>
+          {!loading && !error && books.length > 0 && (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {books.map((book) => (
+                <div
+                  key={book._id}
+                  className="overflow-hidden rounded-xl bg-white shadow-md transition hover:shadow-xl"
+                >
+                  <img
+                    src={book.image}
+                    alt={book.title}
+                    className="h-64 w-full object-cover"
+                  />
+
+                  <div className="space-y-3 p-5">
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {book.title}
+                    </h2>
+
+                    <p className="text-gray-600">
+                      By {book.author}
+                    </p>
+
+                    <p className="text-sm text-indigo-600">
+                      {book.category}
+                    </p>
+
+                    <div className="flex justify-between text-sm text-gray-700">
+                      <span>⭐ {book.rating}</span>
+                      <span>Available: {book.quantity}</span>
+                    </div>
+
+                    <Link
+                      href={`/books/${book._id}`}
+                      className="block rounded-lg bg-indigo-600 px-4 py-2 text-center font-semibold text-white hover:bg-indigo-700"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
-    </div>
+    </>
   );
 }

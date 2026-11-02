@@ -1,61 +1,80 @@
 
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import BookCard, { type Book } from "./BookCard";
 
-// Temporary sample data.
-// Later, books will come from MongoDB through our API.
-const latestBooks: Book[] = [
-  {
-    id: "1",
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    category: "Classic",
-    image: "",
-    availableCopies: 5,
-  },
-  {
-    id: "2",
-    title: "Atomic Habits",
-    author: "James Clear",
-    category: "Self-Help",
-    image: "",
-    availableCopies: 8,
-  },
-  {
-    id: "3",
-    title: "The Alchemist",
-    author: "Paulo Coelho",
-    category: "Fiction",
-    image: "",
-    availableCopies: 4,
-  },
-  {
-    id: "4",
-    title: "1984",
-    author: "George Orwell",
-    category: "Dystopian",
-    image: "",
-    availableCopies: 6,
-  },
-  {
-    id: "5",
-    title: "Deep Work",
-    author: "Cal Newport",
-    category: "Productivity",
-    image: "",
-    availableCopies: 3,
-  },
-  {
-    id: "6",
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    category: "Finance",
-    image: "",
-    availableCopies: 7,
-  },
-];
+type DatabaseBook = {
+  _id: string;
+  title: string;
+  author: string;
+  category: string;
+  image?: string;
+  quantity: number;
+  createdAt?: string;
+};
 
 export default function LatestBooks() {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadBooks() {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/books"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load books");
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.books)) {
+          throw new Error("Invalid books response");
+        }
+
+        const latest = [...(data.books as DatabaseBook[])]
+          .sort((a, b) => {
+            const dateA = a.createdAt
+              ? new Date(a.createdAt).getTime()
+              : 0;
+            const dateB = b.createdAt
+              ? new Date(b.createdAt).getTime()
+              : 0;
+
+            if (dateA !== dateB) return dateB - dateA;
+
+            return b._id.localeCompare(a._id);
+          })
+          .slice(0, 6)
+          .map((book) => ({
+            id: book._id,
+            title: book.title,
+            author: book.author,
+            category: book.category,
+            image: book.image || "",
+            availableCopies: book.quantity ?? 0,
+          }));
+
+        setBooks(latest);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBooks();
+  }, []);
+
   return (
     <section className="bg-slate-50 px-6 py-20">
       <div className="mx-auto max-w-7xl">
@@ -70,7 +89,7 @@ export default function LatestBooks() {
             </h2>
 
             <p className="mt-3 text-slate-600">
-              Discover books worth adding to your reading list.
+              Discover the newest books in our library.
             </p>
           </div>
 
@@ -82,11 +101,31 @@ export default function LatestBooks() {
           </Link>
         </div>
 
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-          {latestBooks.map((book) => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </div>
+        {loading && (
+          <p className="py-10 text-center text-slate-600">
+            Loading latest books...
+          </p>
+        )}
+
+        {error && (
+          <p className="py-10 text-center text-red-600">
+            {error}. Make sure the backend is running.
+          </p>
+        )}
+
+        {!loading && !error && books.length === 0 && (
+          <p className="py-10 text-center text-slate-600">
+            No books available yet.
+          </p>
+        )}
+
+        {!loading && !error && books.length > 0 && (
+          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+            {books.map((book) => (
+              <BookCard key={book.id} book={book} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

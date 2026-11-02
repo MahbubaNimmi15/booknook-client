@@ -1,5 +1,7 @@
 
 import Link from "next/link";
+import { Suspense } from "react";
+
 import Navbar from "../components/Navbar";
 import HeroSlider from "../components/HeroSlider";
 import LatestBooks from "../components/LatestBooks";
@@ -7,12 +9,30 @@ import LatestBooks from "../components/LatestBooks";
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
-      <Navbar />
+      <Suspense fallback={<div className="h-16 bg-white" />}>
+        <Navbar />
+      </Suspense>
 
       <main>
-        <HeroSlider />
+        <Suspense
+          fallback={
+            <div className="flex min-h-[400px] items-center justify-center bg-indigo-600 text-white">
+              Loading featured books...
+            </div>
+          }
+        >
+          <HeroSlider />
+        </Suspense>
 
-        <LatestBooks />
+        <Suspense
+          fallback={
+            <div className="py-20 text-center text-slate-600">
+              Loading latest books...
+            </div>
+          }
+        >
+          <LatestBooks />
+        </Suspense>
 
         <section className="bg-white px-6 py-20 text-center">
           <div className="mx-auto max-w-4xl">
@@ -35,6 +55,35 @@ export default function Home() {
             >
               Explore Collection
             </Link>
+          </div>
+        </section>
+
+        <section className="bg-slate-50 px-6 py-20 text-center">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-3xl font-extrabold text-slate-900">
+              How BookNook Works
+            </h2>
+
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {[
+                ["01", "Explore", "Browse our book collection."],
+                ["02", "Borrow", "Choose and borrow your favorite book."],
+                ["03", "Return", "Return the book when you finish reading."],
+              ].map(([number, title, description]) => (
+                <div
+                  key={number}
+                  className="rounded-2xl bg-white p-8 shadow-sm"
+                >
+                  <p className="text-3xl font-bold text-indigo-600">
+                    {number}
+                  </p>
+                  <h3 className="mt-4 text-xl font-bold text-slate-900">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-slate-600">{description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>

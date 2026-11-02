@@ -12,15 +12,13 @@ const mongoClient = new MongoClient(process.env.MONGODB_URI);
 const clientPromise = mongoClient.connect();
 
 export const auth = betterAuth({
-  // Better Auth URL configuration
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: "http://localhost:3002",
 
-  // Allowed frontend origins
   trustedOrigins: [
     "http://localhost:3001",
+    "http://localhost:3002",
   ],
 
-  // MongoDB database connection
   database: mongodbAdapter(
     mongoClient.db("booknook"),
     {
@@ -28,13 +26,11 @@ export const auth = betterAuth({
     }
   ),
 
-  // Email and password authentication
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
   },
 
-  // User configuration
   user: {
     additionalFields: {},
   },
