@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import HeroSlider from "../components/HeroSlider";
+import LatestBooks from "../components/LatestBooks";
 
 export default function Home() {
   return (
@@ -11,26 +12,30 @@ export default function Home() {
       <main>
         <HeroSlider />
 
-        <section className="mx-auto max-w-7xl px-6 py-20 text-center">
-          <p className="font-semibold uppercase tracking-widest text-indigo-600">
-            Discover More
-          </p>
+        <LatestBooks />
 
-          <h2 className="mt-4 text-3xl font-extrabold text-slate-900 md:text-4xl">
-            Explore the World of Books
-          </h2>
+        <section className="bg-white px-6 py-20 text-center">
+          <div className="mx-auto max-w-4xl">
+            <p className="font-semibold uppercase tracking-widest text-indigo-600">
+              Your Reading Journey
+            </p>
 
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            BookNook makes it easy to discover interesting books,
-            borrow your favorites, and enjoy your reading journey.
-          </p>
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 md:text-4xl">
+              Every Great Story Starts With a Book
+            </h2>
 
-          <Link
-            href="/books"
-            className="mt-8 inline-block rounded-xl bg-indigo-600 px-8 py-4 font-semibold text-white hover:bg-indigo-700"
-          >
-            View All Books
-          </Link>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              Explore inspiring stories, discover new perspectives,
+              and find your next favorite read with BookNook.
+            </p>
+
+            <Link
+              href="/books"
+              className="mt-8 inline-block rounded-xl bg-indigo-600 px-8 py-4 font-semibold text-white hover:bg-indigo-700"
+            >
+              Explore Collection
+            </Link>
+          </div>
         </section>
       </main>
 
