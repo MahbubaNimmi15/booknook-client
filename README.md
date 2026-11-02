@@ -1,7 +1,7 @@
 
 # BookNook — Library Management System
 
-BookNook is a full-stack library management web application where users can explore books, manage their own book listings, and borrow or return books.
+BookNook is a full-stack library management web application built using Next.js, Express.js, MongoDB, and Better Auth.
 
 ## Features
 
@@ -12,41 +12,35 @@ BookNook is a full-stack library management web application where users can expl
 - View My Books
 - Edit and Delete Own Books
 - Borrow and Return Books
-- Protected Routes
 - Responsive User Interface
 
 ## Technologies
 
-### Frontend
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Better Auth
+**Frontend:** Next.js, React, TypeScript, Tailwind CSS
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- MongoDB Atlas
+**Backend:** Node.js, Express.js
+
+**Database:** MongoDB Atlas
+
+**Authentication:** Better Auth
 
 ## Run Locally
 
 ### Frontend
 
-npm install
-npm run dev -- --webpack -p 3002
-
+1. Open the booknook-client folder.
+2. Install dependencies: `npm install`
+3. Configure the required environment variables.
+4. Run: `npm run dev -- --webpack -p 3002`
 
 ### Backend
 
-npm install
-node server.js
+1. Open the booknook-server folder.
+2. Install dependencies: `npm install`
+3. Configure the required environment variables.
+4. Run: `node server.js`
 
-
-Create the required environment variables in the respective frontend and backend folders before running the application.
-
-## Project Repositories
+## GitHub Repositories
 
 Frontend:
 https://github.com/MahbubaNimmi15/booknook-client
@@ -56,6 +50,6 @@ https://github.com/MahbubaNimmi15/booknook-server
 
 ## Project Status
 
-Core book management features have been tested locally.
+The core authentication and book management features have been tested locally.
 
-All Books page troubleshooting, borrowing and returning verification, and production deployment are pending.
+All Books troubleshooting, Borrow/Return verification, responsive testing, and production deployment are still pending.
