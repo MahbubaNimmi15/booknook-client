@@ -59,3 +59,8 @@ All Books troubleshooting, Borrow/Return verification, responsive testing, and p
 - Add, edit, and delete books
 - Borrow and return books
 - Responsive design for mobile and desktop
+
+## Local Development
+1. Install dependencies using npm install.
+2. Configure the required environment variables.
+3. Start the development server using npm run dev.
