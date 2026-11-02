@@ -53,3 +53,9 @@ https://github.com/MahbubaNimmi15/booknook-server
 The core authentication and book management features have been tested locally.
 
 All Books troubleshooting, Borrow/Return verification, responsive testing, and production deployment are still pending.
+
+## Project Features
+- Browse and explore books
+- Add, edit, and delete books
+- Borrow and return books
+- Responsive design for mobile and desktop
