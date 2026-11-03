@@ -12,19 +12,20 @@ const mongoClient = new MongoClient(process.env.MONGODB_URI);
 const clientPromise = mongoClient.connect();
 
 export const auth = betterAuth({
-  baseURL: "http://localhost:3002",
+  baseURL:
+    process.env.BETTER_AUTH_URL ||
+    "http://localhost:3002",
 
   trustedOrigins: [
+    "http://localhost:3000",
     "http://localhost:3001",
     "http://localhost:3002",
+    "https://booknook-client-zbaq.vercel.app",
   ],
 
-  database: mongodbAdapter(
-    mongoClient.db("booknook"),
-    {
-      client: mongoClient,
-    }
-  ),
+  database: mongodbAdapter(mongoClient.db("booknook"), {
+    client: mongoClient,
+  }),
 
   emailAndPassword: {
     enabled: true,
