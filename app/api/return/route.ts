@@ -50,9 +50,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Backend URL for local and production
+    const backendURL =
+      process.env.BACKEND_URL ||
+      "http://localhost:5000";
+
     // Send return request to Express backend
     const response = await fetch(
-      "http://localhost:5000/api/return",
+      `${backendURL}/api/return`,
       {
         method: "POST",
         headers: {
