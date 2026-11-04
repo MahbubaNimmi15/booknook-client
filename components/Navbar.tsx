@@ -17,18 +17,23 @@ export default function Navbar() {
   const user = session?.user;
 
   async function handleLogout() {
-    const { error } = await authClient.signOut();
+    try {
+      const { error } = await authClient.signOut();
 
-    if (error) {
-      toast.error(error.message || "Logout failed");
-      return;
+      if (error) {
+        toast.error(error.message || "Logout failed");
+        return;
+      }
+
+      setProfileOpen(false);
+      setMobileOpen(false);
+      toast.success("Logged out successfully!");
+
+      router.push("/");
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong. Please try again.");
     }
-
-    setProfileOpen(false);
-    setMobileOpen(false);
-    toast.success("Logged out successfully!");
-    router.push("/");
-    router.refresh();
   }
 
   const publicLinks = [
@@ -52,11 +57,34 @@ export default function Navbar() {
 
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
+
+          {/* BookNook Logo */}
           <Link
             href="/"
-            className="text-2xl font-extrabold text-indigo-600"
+            onClick={() => setMobileOpen(false)}
+            className="flex shrink-0 items-center gap-2 text-indigo-600"
+            aria-label="BookNook Home"
           >
-            BookNook
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="shrink-0"
+            >
+              <path d="M12 7v14" />
+              <path d="M3 18V5a2 2 0 0 1 2-2h3a4 4 0 0 1 4 4 4 4 0 0 1 4-4h3a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4a1 1 0 0 1-1-1Z" />
+            </svg>
+
+            <span className="text-xl font-extrabold tracking-tight sm:text-2xl">
+              BookNook
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -65,7 +93,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-slate-700 transition hover:text-indigo-600"
+                className="whitespace-nowrap text-sm font-medium text-slate-700 transition hover:text-indigo-600"
               >
                 {link.label}
               </Link>
@@ -83,7 +111,8 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center gap-2 rounded-full border border-slate-200 p-1 pr-3"
+                  aria-expanded={profileOpen}
+                  className="flex items-center gap-2 rounded-full border border-slate-200 p-1 pr-3 transition hover:bg-slate-50"
                 >
                   {user.image ? (
                     <img
@@ -100,7 +129,10 @@ export default function Navbar() {
                   <span className="max-w-28 truncate text-sm font-semibold text-slate-700">
                     {user.name}
                   </span>
-                  <span className="text-slate-400">⌄</span>
+
+                  <span className="text-slate-400">
+                    ⌄
+                  </span>
                 </button>
 
                 {profileOpen && (
@@ -116,7 +148,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="w-full rounded-lg bg-red-50 px-4 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-100"
+                      className="w-full rounded-lg bg-red-50 px-4 py-2 text-left text-sm font-semibold text-red-600 transition hover:bg-red-100"
                     >
                       Logout
                     </button>
@@ -127,14 +159,14 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="rounded-lg border border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50"
+                  className="rounded-lg border border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
                 >
                   Register
                 </Link>
@@ -149,6 +181,7 @@ export default function Navbar() {
             className="rounded-lg border border-slate-200 px-3 py-2 text-xl text-slate-700 lg:hidden"
             aria-label="Toggle navigation"
             aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
           >
             {mobileOpen ? "✕" : "☰"}
           </button>
@@ -156,27 +189,30 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         {mobileOpen && (
-          <div className="border-t border-slate-200 bg-white px-5 py-4 lg:hidden">
+          <div
+            id="mobile-navigation"
+            className="border-t border-slate-200 bg-white px-5 py-4 lg:hidden"
+          >
             <div className="flex flex-col gap-4">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="font-medium text-slate-700 hover:text-indigo-600"
+                  className="font-medium text-slate-700 transition hover:text-indigo-600"
                 >
                   {link.label}
                 </Link>
               ))}
 
-              {!isPending && (
-                user ? (
+              {!isPending &&
+                (user ? (
                   <div className="border-t border-slate-200 pt-4">
                     <p className="font-semibold text-slate-900">
                       {user.name}
                     </p>
 
-                    <p className="mb-3 text-sm text-slate-500">
+                    <p className="mb-3 break-all text-sm text-slate-500">
                       {user.email}
                     </p>
 
@@ -189,7 +225,7 @@ export default function Navbar() {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex gap-3 border-t border-slate-200 pt-4">
+                  <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-4">
                     <Link
                       href="/login"
                       onClick={() => setMobileOpen(false)}
@@ -206,8 +242,7 @@ export default function Navbar() {
                       Register
                     </Link>
                   </div>
-                )
-              )}
+                ))}
             </div>
           </div>
         )}

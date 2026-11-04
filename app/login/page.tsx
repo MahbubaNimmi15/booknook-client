@@ -14,6 +14,16 @@ function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const callbackURL = searchParams.get("callbackURL");
+
+  const destination =
+    callbackURL?.startsWith("/") &&
+    !callbackURL.startsWith("//") &&
+    !callbackURL.startsWith("/\\")
+      ? callbackURL
+      : "/";
 
   async function handleLogin(
     e: React.FormEvent<HTMLFormElement>
@@ -23,7 +33,7 @@ function LoginContent() {
 
     try {
       const { error } = await authClient.signIn.email({
-        email,
+        email: email.trim(),
         password,
       });
 
@@ -34,20 +44,32 @@ function LoginContent() {
 
       toast.success("Login successful!");
 
-      const callbackURL = searchParams.get("callbackURL");
-
-      const destination =
-        callbackURL?.startsWith("/") &&
-        !callbackURL.startsWith("//")
-          ? callbackURL
-          : "/";
-
       router.push(destination);
       router.refresh();
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setGoogleLoading(true);
+
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: destination,
+        errorCallbackURL: "/login",
+      });
+
+      if (error) {
+        toast.error(error.message || "Google login failed.");
+        setGoogleLoading(false);
+      }
+    } catch {
+      toast.error("Google login failed. Please try again.");
+      setGoogleLoading(false);
     }
   }
 
@@ -120,12 +142,55 @@ function LoginContent() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || googleLoading}
             className="w-full rounded-lg bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-sm text-slate-400">
+            OR
+          </span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading || googleLoading}
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 48 48"
+            aria-hidden="true"
+          >
+            <path
+              fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+            />
+            <path
+              fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.28 5.48-4.82 7.18l7.73 6C44.36 38.03 46.98 31.88 46.98 24.55z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z"
+            />
+            <path
+              fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"
+            />
+          </svg>
+
+          {googleLoading
+            ? "Connecting to Google..."
+            : "Continue with Google"}
+        </button>
 
         <p className="mt-6 text-center text-sm text-slate-600">
           Don't have an account?{" "}
@@ -140,6 +205,7 @@ function LoginContent() {
     </main>
   );
 }
+
 export default function LoginPage() {
   return (
     <Suspense fallback={<div>Loading login...</div>}>

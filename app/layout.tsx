@@ -14,16 +14,53 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BookNook | Online Library",
+  metadataBase: new URL(
+    "https://booknook-client-zbaq.vercel.app"
+  ),
+
+  title: {
+    default: "BookNook | Your Digital Library",
+    template: "%s | BookNook",
+  },
+
   description:
-    "Discover, borrow, and manage your favorite books with BookNook.",
+    "Discover, explore, borrow, and manage your favorite books with BookNook, your online digital library.",
+
+  applicationName: "BookNook",
+
+  keywords: [
+    "BookNook",
+    "Online Library",
+    "Digital Library",
+    "Book Borrowing",
+    "Book Collection",
+    "Read Books",
+  ],
+
+  openGraph: {
+    title: "BookNook | Your Digital Library",
+    description:
+      "Explore, borrow, and manage your favorite books online with BookNook.",
+    url: "https://booknook-client-zbaq.vercel.app",
+    siteName: "BookNook",
+    type: "website",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html
       lang="en"
