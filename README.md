@@ -1,66 +1,50 @@
+# BookNook — Online Library
 
-# BookNook — Library Management System
+BookNook is a full-stack online library application where users can explore books, manage their own book collections, borrow books, and return them.
 
-BookNook is a full-stack library management web application built using Next.js, Express.js, MongoDB, and Better Auth.
+## Live Links
 
-## Features
-
-- User Registration and Login
-- Browse All Books
-- View Book Details
-- Add New Books
-- View My Books
-- Edit and Delete Own Books
-- Borrow and Return Books
-- Responsive User Interface
-
-## Technologies
-
-**Frontend:** Next.js, React, TypeScript, Tailwind CSS
-
-**Backend:** Node.js, Express.js
-
-**Database:** MongoDB Atlas
-
-**Authentication:** Better Auth
-
-## Run Locally
-
-### Frontend
-
-1. Open the booknook-client folder.
-2. Install dependencies: `npm install`
-3. Configure the required environment variables.
-4. Run: `npm run dev -- --webpack -p 3002`
-
-### Backend
-
-1. Open the booknook-server folder.
-2. Install dependencies: `npm install`
-3. Configure the required environment variables.
-4. Run: `node server.js`
+- **Client:** https://booknook-client-zbaq.vercel.app
+- **Server:** https://booknook-server-gold.vercel.app
 
 ## GitHub Repositories
 
-Frontend:
-https://github.com/MahbubaNimmi15/booknook-client
+- **Client:** https://github.com/MahbubaNimmi15/booknook-client
+- **Server:** https://github.com/MahbubaNimmi15/booknook-server
 
-Backend:
-https://github.com/MahbubaNimmi15/booknook-server
+## Main Features
 
-## Project Status
+1. Email/password registration and login with Google authentication.
+2. Browse available books and view book details.
+3. Add new books to the library.
+4. Edit and delete books from My Books.
+5. Borrow available books and return borrowed books.
+6. Protected routes for authenticated users.
+7. Manage personal books and borrowing history.
 
-The core authentication and book management features have been tested locally.
+## Technologies Used
 
-All Books troubleshooting, Borrow/Return verification, responsive testing, and production deployment are still pending.
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Better Auth
+- MongoDB
+- Express.js
+- Vercel
 
-## Project Features
-- Browse and explore books
-- Add, edit, and delete books
-- Borrow and return books
-- Responsive design for mobile and desktop
+## Local Setup
 
-## Local Development
-1. Install dependencies using npm install.
-2. Configure the required environment variables.
-3. Start the development server using npm run dev.
+1. Clone the client repository.
+2. Install dependencies using npm install.
+3. Configure the required environment variables in .env.local.
+4. Run npm run dev -- --webpack.
+5. Open http://localhost:3000.
+
+## Authentication
+
+BookNook supports email/password authentication and Google OAuth through Better Auth.
+
+## Deployment
+
+The frontend and backend are deployed separately on Vercel.
