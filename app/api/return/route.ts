@@ -5,9 +5,11 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    // Check logged-in user
+    const requestHeaders = await headers();
+
+    // Verify logged-in user
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     if (!session?.user?.email) {
@@ -20,7 +22,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // Read borrow ID
+    // Get JWT from Better Auth
+    const tokenResponse = await auth.api.getToken({
+      headers: requestHeaders,
+    });
+
+    const token = tokenResponse?.token;
+
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unable to generate JWT token",
+        },
+        { status: 401 }
+      );
+    }
+
+    // Validate borrow ID
     const body = await request.json();
     const borrowId = body?.borrowId;
 
@@ -37,32 +56,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // Read private server-side key
-    const apiSecret = process.env.INTERNAL_API_SECRET;
-
-    if (!apiSecret) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Server security configuration is missing",
-        },
-        { status: 500 }
-      );
-    }
-
-    // Backend URL for local and production
+    // Backend configuration
     const backendURL =
       process.env.BACKEND_URL ||
       "http://localhost:5000";
 
-    // Send return request to Express backend
+    // Send JWT to Express backend
     const response = await fetch(
       `${backendURL}/api/return`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-internal-api-key": apiSecret,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           borrowId,
