@@ -1,12 +1,13 @@
 
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AddBookPage() {
   const router = useRouter();
 
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
@@ -23,6 +24,51 @@ export default function AddBookPage() {
     rating: "4.7",
   });
 
+  useEffect(() => {
+    let active = true;
+
+    async function checkAuth() {
+      try {
+        const response = await fetch(
+          "/api/auth/get-session",
+          {
+            credentials: "same-origin",
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Session check failed");
+        }
+
+        const session = await response.json();
+
+        if (!active) return;
+
+        if (!session?.user?.email) {
+          router.replace(
+            "/login?callbackUrl=%2Fadd-book"
+          );
+          return;
+        }
+
+        setCheckingAuth(false);
+      } catch {
+        if (active) {
+          router.replace(
+            "/login?callbackUrl=%2Fadd-book"
+          );
+        }
+      }
+    }
+
+    checkAuth();
+
+    return () => {
+      active = false;
+    };
+  }, [router]);
+
   function updateField(
     field: keyof typeof form,
     value: string
@@ -38,7 +84,7 @@ export default function AddBookPage() {
   ) {
     event.preventDefault();
 
-    if (loading) return;
+    if (loading || checkingAuth) return;
 
     setLoading(true);
     setMessage("");
@@ -116,6 +162,16 @@ export default function AddBookPage() {
 
   const inputStyle =
     "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-orange-500 focus:outline-none";
+
+  if (checkingAuth) {
+    return (
+      <main className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-gray-500">
+          Checking login...
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
