@@ -3,12 +3,11 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { authClient } from "../../lib/auth-client";
 import toast, { Toaster } from "react-hot-toast";
 
 function LoginContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [email, setEmail] = useState("");
@@ -29,6 +28,9 @@ function LoginContent() {
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault();
+
+    if (loading || googleLoading) return;
+
     setLoading(true);
 
     try {
@@ -46,8 +48,8 @@ function LoginContent() {
 
       toast.success("Login successful!");
 
-      router.replace(destination);
-      router.refresh();
+      // Reload the page so Navbar checks the session again.
+      window.location.replace(destination);
     } catch (error) {
       console.error("Email login error:", error);
       toast.error("Unable to login. Please try again.");
@@ -85,14 +87,16 @@ function LoginContent() {
         return;
       }
 
-      // Better Auth normally redirects automatically.
+      // Better Auth normally handles the Google redirect.
     } catch (error) {
       console.error("Google login exception:", error);
+
       toast.error(
         error instanceof Error
           ? error.message
           : "Google login failed. Please try again."
       );
+
       setGoogleLoading(false);
     }
   }
