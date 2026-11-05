@@ -32,43 +32,67 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      const { error } = await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email: email.trim(),
         password,
       });
 
-      if (error) {
-        toast.error(error.message || "Login failed.");
+      if (result.error) {
+        toast.error(
+          result.error.message || "Invalid email or password."
+        );
         return;
       }
 
       toast.success("Login successful!");
 
-      router.push(destination);
+      router.replace(destination);
       router.refresh();
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (error) {
+      console.error("Email login error:", error);
+      toast.error("Unable to login. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
   async function handleGoogleLogin() {
+    if (googleLoading || loading) return;
+
     setGoogleLoading(true);
 
     try {
-      const { error } = await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: "google",
         callbackURL: destination,
         errorCallbackURL: "/login",
       });
 
-      if (error) {
-        toast.error(error.message || "Google login failed.");
+      if (result.error) {
+        console.error("Google login error:", result.error);
+
+        toast.error(
+          result.error.message ||
+            `Google login failed (${result.error.status || "unknown"}).`
+        );
+
         setGoogleLoading(false);
+        return;
       }
-    } catch {
-      toast.error("Google login failed. Please try again.");
+
+      if (result.data?.url && !result.data.redirect) {
+        window.location.assign(result.data.url);
+        return;
+      }
+
+      // Better Auth normally redirects automatically.
+    } catch (error) {
+      console.error("Google login exception:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Google login failed. Please try again."
+      );
       setGoogleLoading(false);
     }
   }
@@ -111,6 +135,7 @@ function LoginContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
+              autoComplete="email"
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 outline-none focus:border-indigo-500"
             />
           </div>
@@ -130,6 +155,7 @@ function LoginContent() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
+              autoComplete="current-password"
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 outline-none focus:border-indigo-500"
             />
           </div>
@@ -151,9 +177,7 @@ function LoginContent() {
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-sm text-slate-400">
-            OR
-          </span>
+          <span className="text-sm text-slate-400">OR</span>
           <div className="h-px flex-1 bg-slate-200" />
         </div>
 
