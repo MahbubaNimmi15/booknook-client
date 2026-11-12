@@ -16,6 +16,8 @@ type Book = {
   rating: number;
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function BookDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -31,9 +33,16 @@ export default function BookDetailsPage() {
 
   useEffect(() => {
     async function loadBook() {
+      setLoading(true);
+      setError("");
+
       try {
+        if (!API_URL) {
+          throw new Error("API URL is not configured");
+        }
+
         const response = await fetch(
-          `http://localhost:5000/api/books/${id}`,
+          `${API_URL}/api/books/${encodeURIComponent(id)}`,
           { cache: "no-store" }
         );
 
@@ -126,9 +135,7 @@ export default function BookDetailsPage() {
             ← Back to All Books
           </button>
 
-          {loading && (
-            <p>Loading book details...</p>
-          )}
+          {loading && <p>Loading book details...</p>}
 
           {error && (
             <p className="text-red-600">{error}</p>

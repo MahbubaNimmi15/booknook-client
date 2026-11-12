@@ -59,11 +59,23 @@ export async function POST(request: Request) {
     // Backend configuration
     const backendURL =
       process.env.BACKEND_URL ||
-      "http://localhost:5000";
+      process.env.NEXT_PUBLIC_API_URL;
+
+    if (!backendURL) {
+      console.error("Backend API URL is not configured");
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Backend configuration error",
+        },
+        { status: 500 }
+      );
+    }
 
     // Send JWT to Express backend
     const response = await fetch(
-      `${backendURL}/api/return`,
+      `${backendURL.replace(/\/$/, "")}/api/return`,
       {
         method: "POST",
         headers: {

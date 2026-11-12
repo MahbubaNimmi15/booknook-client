@@ -15,6 +15,8 @@ type DatabaseBook = {
   createdAt?: string;
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function LatestBooks() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,9 +24,17 @@ export default function LatestBooks() {
 
   useEffect(() => {
     async function loadBooks() {
+      setLoading(true);
+      setError("");
+
       try {
+        if (!API_URL) {
+          throw new Error("Backend API URL is not configured");
+        }
+
         const response = await fetch(
-          "http://localhost:5000/api/books"
+          `${API_URL.replace(/\/$/, "")}/api/books`,
+          { cache: "no-store" }
         );
 
         if (!response.ok) {
@@ -42,11 +52,14 @@ export default function LatestBooks() {
             const dateA = a.createdAt
               ? new Date(a.createdAt).getTime()
               : 0;
+
             const dateB = b.createdAt
               ? new Date(b.createdAt).getTime()
               : 0;
 
-            if (dateA !== dateB) return dateB - dateA;
+            if (dateA !== dateB) {
+              return dateB - dateA;
+            }
 
             return b._id.localeCompare(a._id);
           })
@@ -109,7 +122,7 @@ export default function LatestBooks() {
 
         {error && (
           <p className="py-10 text-center text-red-600">
-            {error}. Make sure the backend is running.
+            {error}
           </p>
         )}
 
