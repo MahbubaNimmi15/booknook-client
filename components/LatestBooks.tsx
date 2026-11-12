@@ -15,7 +15,7 @@ type DatabaseBook = {
   createdAt?: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = "https://booknook-server-gold.vercel.app";
 
 export default function LatestBooks() {
   const [books, setBooks] = useState<Book[]>([]);
