@@ -16,7 +16,8 @@ type Book = {
   rating: number;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+// Production backend URL
+const API_URL = "https://booknook-server-gold.vercel.app";
 
 export default function BookDetailsPage() {
   const params = useParams();
@@ -37,10 +38,6 @@ export default function BookDetailsPage() {
       setError("");
 
       try {
-        if (!API_URL) {
-          throw new Error("API URL is not configured");
-        }
-
         const response = await fetch(
           `${API_URL}/api/books/${encodeURIComponent(id)}`,
           { cache: "no-store" }
@@ -98,7 +95,7 @@ export default function BookDetailsPage() {
       setBorrowSuccess(true);
       setBorrowMessage("Book borrowed successfully!");
 
-      // Update available copies after successful borrow
+      // Update available copies
       setBook((previousBook) =>
         previousBook
           ? {
