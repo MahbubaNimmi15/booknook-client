@@ -3,11 +3,16 @@ import { auth } from "../../../lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
+const BACKEND_URL =
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://booknook-server-gold.vercel.app";
+
 export async function POST(request: Request) {
   try {
+    // Get current logged-in user
     const requestHeaders = await headers();
 
-    // Verify logged-in user
     const session = await auth.api.getSession({
       headers: requestHeaders,
     });
@@ -17,23 +22,6 @@ export async function POST(request: Request) {
         {
           success: false,
           message: "Please login to return a book",
-        },
-        { status: 401 }
-      );
-    }
-
-    // Get JWT from Better Auth
-    const tokenResponse = await auth.api.getToken({
-      headers: requestHeaders,
-    });
-
-    const token = tokenResponse?.token;
-
-    if (!token) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Unable to generate JWT token",
         },
         { status: 401 }
       );
@@ -56,26 +44,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Backend configuration
-    const backendURL =
-      process.env.BACKEND_URL ||
-      process.env.NEXT_PUBLIC_API_URL;
+    // Generate JWT token using Better Auth
+    const tokenResponse = await auth.api.getToken({
+      headers: requestHeaders,
+    });
 
-    if (!backendURL) {
-      console.error("Backend API URL is not configured");
+    const token = tokenResponse?.token;
 
+    if (!token) {
       return NextResponse.json(
         {
           success: false,
-          message: "Backend configuration error",
+          message: "Unable to generate authentication token",
         },
-        { status: 500 }
+        { status: 401 }
       );
     }
 
-    // Send JWT to Express backend
+    // Forward return request to Express backend
     const response = await fetch(
-      `${backendURL.replace(/\/$/, "")}/api/return`,
+      `${BACKEND_URL.replace(/\/+$/, "")}/api/return`,
       {
         method: "POST",
         headers: {
@@ -91,6 +79,13 @@ export async function POST(request: Request) {
     );
 
     const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Backend return request failed:", {
+        status: response.status,
+        message: data.message,
+      });
+    }
 
     return NextResponse.json(data, {
       status: response.status,
