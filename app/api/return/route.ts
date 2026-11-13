@@ -5,14 +5,13 @@ import { NextResponse } from "next/server";
 
 const BACKEND_URL =
   process.env.BACKEND_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
   "https://booknook-server-gold.vercel.app";
 
 export async function POST(request: Request) {
   try {
-    // Get current logged-in user
     const requestHeaders = await headers();
 
+    // Verify the current user using Better Auth
     const session = await auth.api.getSession({
       headers: requestHeaders,
     });
@@ -27,7 +26,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate borrow ID
+    // Validate the borrow ID
     const body = await request.json();
     const borrowId = body?.borrowId;
 
@@ -44,31 +43,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate JWT token using Better Auth
-    const tokenResponse = await auth.api.getToken({
-      headers: requestHeaders,
-    });
+    // Server-side internal API authentication
+    const internalApiSecret =
+      process.env.INTERNAL_API_SECRET;
 
-    const token = tokenResponse?.token;
+    if (!internalApiSecret) {
+      console.error("INTERNAL_API_SECRET is missing");
 
-    if (!token) {
       return NextResponse.json(
         {
           success: false,
-          message: "Unable to generate authentication token",
+          message: "Server authentication configuration error",
         },
-        { status: 401 }
+        { status: 500 }
       );
     }
 
-    // Forward return request to Express backend
+    // Forward request securely to Express backend
     const response = await fetch(
       `${BACKEND_URL.replace(/\/+$/, "")}/api/return`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "x-internal-api-key": internalApiSecret,
         },
         body: JSON.stringify({
           borrowId,
@@ -81,7 +79,7 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Backend return request failed:", {
+      console.error("Return request failed:", {
         status: response.status,
         message: data.message,
       });
